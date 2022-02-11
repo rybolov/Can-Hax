@@ -222,13 +222,13 @@ def sendpacket(canid, level, matrix):
     if args.verbose:
         print('Starting fuzz run. Level:', level)
         print('Matrix:', matrix)
-    if level != len(matrix) -1:  #Ie, we're not at the last row.
+    if level != len(matrix) - 1:  # Ie, we're not at the last row.
         for character in matrix[level]:
             newlevel = level + 1
             newmatrix = deepcopy(matrix)
             newmatrix[level] = str(character)
             sendpacket(canid, newlevel, newmatrix)
-    else:  #Ie, we're at the last row.
+    else:  # Ie, we're at the last row.
         for character in matrix[level]:
             newmatrix = deepcopy(matrix)
             newmatrix[level] = str(character)
