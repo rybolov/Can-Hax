@@ -197,6 +197,8 @@ def fuzz():
     if args.verbose:
         print('Found', len(fingerprints.keys()), 'CAN IDs.')
         print(json.dumps(fingerprints, indent=4, sort_keys=True))
+    if args.canid:
+        fingerprints = {args.canid: fingerprints[args.canid]}
     for canid in fingerprints:
         fuzzmatrix = []
         for character in fingerprints[canid]:
