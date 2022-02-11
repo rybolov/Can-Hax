@@ -40,6 +40,8 @@ packet_re = re.compile("^[A-Fa-f0-9]{3}#[A-Fa-f0-9]{4,24}$")
 numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 hexes = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
 
+exec_start_time = int(datetime.datetime.now().timestamp())
+
 
 # #### Input validation, we loves it.... #### #
 def valid_file(filename):
@@ -66,6 +68,9 @@ parser.add_argument('--fuzz', '-F', action='store_true', help='Fuzz a bus based 
 parser.add_argument('--test', action='store_true', help='Test that the canutils exist and are executable. \
     (default: none)')
 parser.add_argument('--can', '-c', help='Can Device.  Required for --fuzz. (default: none)')
+parser.add_argument('--canid', '-I', help='Only fuzz on one CAN ID.  Optional for --fuzz. (default: none)')
+parser.add_argument('--dryrun', '-D', action='store_true', help='Dry run only, don\'t send the CAN frame.  \
+    Optional for --fuzz. (default: none)')
 parser.add_argument('--timing', '-t', default=20, help='Time delay in seconds per frame for --fuzz. (default: 20)')
 args = parser.parse_args()
 
@@ -100,6 +105,8 @@ def main():
         # print('No command specified, implying --help.\n')
         parser.print_help()
         exit(666)
+    totaltime = int(datetime.datetime.now().timestamp()) - exec_start_time
+    print(f'Done. Total realtime was {str(datetime.timedelta(seconds=totaltime))}.')
 
 
 def fingerprint():
@@ -226,8 +233,9 @@ def sendpacket(canid, level, matrix):
             canframe = canid + '#' + ''.join(newmatrix)
             print('Sending CAN frame: ', canframe)
             cansend = 'cansend ' + args.can + ' ' + canframe
-            # os.system(cansend)
-            # time.sleep(int(args.timing))
+            if not args.dryrun:  # Ie, we didn't disable sending the CAN frame
+                os.system(cansend)
+                time.sleep(int(args.timing))
     return()
 
 
