@@ -18,6 +18,7 @@ import shutil
 import os
 import datetime
 import time
+from copy import deepcopy
 
 print("""
  _____                   _   _            
@@ -212,19 +213,23 @@ def sendpacket(canid, level, matrix):
     if args.verbose:
         print('Starting fuzz run. Level:', level)
         print('Matrix:', matrix)
-    for character in matrix[level]:
-        if level != len(matrix) -1:
+    if level != len(matrix) -1:  #Ie, we're not at the last row.
+        for character in matrix[level]:
             newlevel = level + 1
-            matrix[level] = str(character)
-            sendpacket(canid, newlevel, matrix)
-        else:
-            matrix[level] = str(character)
-            canframe = canid + '#' + ''.join(matrix)
+            newmatrix = deepcopy(matrix)
+            newmatrix[level] = str(character)
+            sendpacket(canid, newlevel, newmatrix)
+    else:  #Ie, we're at the last row.
+        for character in matrix[level]:
+            newmatrix = deepcopy(matrix)
+            newmatrix[level] = str(character)
+            canframe = canid + '#' + ''.join(newmatrix)
             print('Sending CAN frame: ', canframe)
             cansend = 'cansend ' + args.can + ' ' + canframe
-            os.system(cansend)
-            time.sleep(int(args.timing))
-    return
+            # os.system(cansend)
+            # time.sleep(int(args.timing))
+    return()
+
 
 if __name__ == '__main__':
     main()
