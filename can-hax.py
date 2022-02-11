@@ -223,7 +223,7 @@ def sendpacket(canid, level, matrix):
             print('Sending CAN frame: ', canframe)
             cansend = 'cansend ' + args.can + ' ' + canframe
             os.system(cansend)
-            time.sleep(args.timing)
+            time.sleep(int(args.timing))
     return
 
 if __name__ == '__main__':
