@@ -1,9 +1,11 @@
 #!/bin/python3
 
-# Can-Hax is a utility to fingerprint and fuzz Controller Area Network (CAN) packets.
-# Gives you a fingerprint which is a JSON of <CAN ID>:<Can Payload Format>
-# CAN payload format can be: 0=not observed in use, H=Hexadecimal values observed, N=Decimal values observed
+# Can-Hax is a utility to fingerprint and fuzz Controller Area Network (CAN) packets using can-utils
+# which are available on most Linux variants.
+# Fingerprinting gives you a fingerprint which is a JSON of <CAN ID>:<Can Payload Format>
+# CAN payload template can be: 0=not observed in use, H=Hexadecimal values observed, N=Decimal values observed
 # So it looks something like 00NHHHHH.
+# Fuzzing uses cansend to push the frames over the wire.
 # Michael Smith rybolov@rybolov.net
 
 
