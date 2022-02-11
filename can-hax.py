@@ -17,6 +17,7 @@ import json
 import shutil
 import os
 import datetime
+import time
 
 print("""
  _____                   _   _            
@@ -61,9 +62,10 @@ parser.add_argument('--description', '-d', help='Description of the device. (Onl
     (default: none)')
 parser.add_argument('--fuzz', '-F', action='store_true', help='Fuzz a bus based on a fingerprint file. \
     (Requires input file) (default: none)')
-parser.add_argument('--test', '-t', action='store_true', help='Test that the canutils exist and are executable. \
+parser.add_argument('--test', action='store_true', help='Test that the canutils exist and are executable. \
     (default: none)')
 parser.add_argument('--can', '-c', help='Can Device.  Required for --fuzz. (default: none)')
+parser.add_argument('--timing', '-t', default=20, help='Time delay in seconds per frame for --fuzz. (default: 20)')
 args = parser.parse_args()
 
 
@@ -221,6 +223,8 @@ def sendpacket(canid, level, matrix):
             print('Sending CAN frame: ', canframe)
             cansend = 'cansend ' + args.can + ' ' + canframe
             os.system(cansend)
+            time.sleep(args.timing)
+    return
 
 if __name__ == '__main__':
     main()
