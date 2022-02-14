@@ -260,6 +260,7 @@ def fuzz():
 
 
 def zeroize():
+    print('Running zeroize now.')
     for character0 in hexes:
         for character1 in hexes:
             for character2 in hexes:

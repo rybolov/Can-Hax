@@ -1,13 +1,36 @@
 # Can-Hax
-Can-Hax is a utility to fingerprint and fuzz Controller Area Network (CAN) packets using can-utils which are available on most Linux variants.
+Can-Hax is a utility to fingerprint and fuzz Controller Area Network (CAN) packets/frames using can-utils which are available on most Linux variants.
 
-Fingerprinting gives you a fingerprint which is a JSON of &lt;CAN ID&gt;:&lt;Can Payload Format&gt;
+For testing, I used ICSim at https://github.com/zombieCraig/ICSim
+
+Fingerprinting gives you a fingerprint which is a JSON of &lt;CAN ID&gt;:&lt;Can Payload Format&gt;.  I put an example of a fingerprint of ICSim in this project as icsim_fingerprint.V2.json that you can use to compare output.
 
 CAN payload template can be: 0=not observed in use, H=Hexadecimal values observed, N=Decimal values observed, so it looks something like 00NHHHHH.
 
 Fuzzing uses cansend to push the frames over the wire.
 
-For testing, I used ICSim at https://github.com/zombieCraig/ICSim
+## Setup for ICSim:
+You will need cansend which is part of the can-utils package.  You can grab it on a Debian-based system with:
+
+`sudo apt-get install can-utils build-essential`
+
+The ICSim project comes with a simple shell script setup_vcan.sh which installs the appropriate kernel modules and creates a virtual CAN device at vcan0 which you can then use to send and receive CAN frames.  It also has an Instrument Cluster (vehicle dashboard) which you can use to view if your fuzzing makes any noticeable changes to the simulated vehicle (tip: try fuzzing CAN IDs 244, 19B, and 188).
+
+`git clone https://github.com/zombieCraig/ICSim.git`
+
+`cd ICSim`
+
+`bash ./setup_vcan.sh`
+
+`make`
+
+`./icsim vcan0 &`
+
+Can-utils also gives you cansniffer and candump which you can use to see what Can-Hax is doing.
+
+`cansniffer -c vcan0`
+
+`candump -c vcan0`
 
 ## Fingerprinting Usage:
 Generate a CAN log with candump.
