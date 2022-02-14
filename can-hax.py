@@ -82,6 +82,7 @@ parser.add_argument('--superquick', '-s', action='store_true', help='Use an extr
     for a quicker fuzzing time with Numbers 0,9 and Hexadecimal 0,F. (default: none)')
 parser.add_argument('--adaptive', '-a', action='store_true', help='Use adaptive quickness on a per-CANID basis \
     where more complex templates use a reduced set of characters from --quick and --superquick. (default: none)')
+parser.add_argument('--zeroize', '-z', action='store_true', help='Send all zeroes to all CAN IDs. (default: none)')
 args = parser.parse_args()
 
 
@@ -111,6 +112,9 @@ def main():
         fingerprint()
     elif args.fuzz:
         fuzz()
+        zeroize()
+    elif args.zeroize:
+        zeroize()
     elif len(sys.argv) < 2:
         # print('No command specified, implying --help.\n')
         parser.print_help()
@@ -254,6 +258,14 @@ def fuzz():
             print('Fuzz Matrix', fuzzmatrix)
         sendpacket(canid, 0, fuzzmatrix)
 
+
+def zeroize():
+    for character0 in hexes:
+        for character1 in hexes:
+            for character2 in hexes:
+                cansend = 'cansend ' + args.can + ' ' + '000000000000000000000000'
+                if not args.dryrun:  # Ie, we didn't disable sending the CAN frame
+                    os.system(cansend)
 
 def sendpacket(canid, level, matrix):
     if args.verbose:
