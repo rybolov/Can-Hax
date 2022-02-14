@@ -264,10 +264,10 @@ def zeroize():
         for character1 in hexes:
             for character2 in hexes:
                 canid = character0 + character1 + character2
-                payload = '0'
+                payload = ''
                 # print(canid)
-                for payloadsize in range(0,23):
-                    payload += '0'
+                for payloadsize in range(0, 12):
+                    payload += '00'
                     # print(payload)
                     cansend = 'cansend ' + args.can + ' ' + canid + '#' + payload
                     # print(cansend)
