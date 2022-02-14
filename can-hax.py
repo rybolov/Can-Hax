@@ -264,10 +264,16 @@ def zeroize():
         for character1 in hexes:
             for character2 in hexes:
                 canid = character0 + character1 + character2
-                cansend = 'cansend ' + args.can + ' ' + canid + '#0000000000000000'
-                # print(cansend)
-                if not args.dryrun:  # Ie, we didn't disable sending the CAN frame
-                    os.system(cansend)
+                payload = '0'
+                # print(canid)
+                for payloadsize in range(0,23):
+                    payload += '0'
+                    # print(payload)
+                    cansend = 'cansend ' + args.can + ' ' + canid + '#' + payload
+                    # print(cansend)
+                    if not args.dryrun:  # Ie, we didn't disable sending the CAN frame
+                        os.system(cansend)
+
 
 def sendpacket(canid, level, matrix):
     if args.verbose:
