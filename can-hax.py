@@ -38,7 +38,11 @@ packet_re = re.compile("^[A-Fa-f0-9]{3}#[A-Fa-f0-9]{4,24}$")
 
 # This was easier than recreating every single time.
 numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+quicknumbers = ['0', '1', '5', '9']
+superquicknumbers = ['0', '9']
 hexes = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
+quickhexes = ['0', '1', '9', 'A', 'B', 'F']
+superquickhexes = ['0', 'F']
 
 exec_start_time = int(datetime.datetime.now().timestamp())
 
@@ -72,6 +76,12 @@ parser.add_argument('--canid', '-I', help='Only fuzz on one CAN ID.  Optional fo
 parser.add_argument('--dryrun', '-D', action='store_true', help='Dry run only, don\'t send the CAN frame.  \
     Optional for --fuzz. (default: none)')
 parser.add_argument('--timing', '-t', default=20, help='Time delay in seconds per frame for --fuzz. (default: 20)')
+parser.add_argument('--quick', '-q', action='store_true', help='Use a restricted set of values for a quicker \
+    fuzzing time with Numbers 0,1,5,9 and Hexadecimal 0,1,9,A,F. (default: none)')
+parser.add_argument('--superquick', '-s', action='store_true', help='Use an extremely restricted set of values \
+    for a quicker fuzzing time with Numbers 0,9 and Hexadecimal 0,F. (default: none)')
+parser.add_argument('--adaptive', '-a', action='store_true', help='Use adaptive quickness on a per-CANID basis \
+    where more complex templates use a reduced set of characters from --quick and --superquick. (default: none)')
 args = parser.parse_args()
 
 
@@ -201,13 +211,40 @@ def fuzz():
         fingerprints = {args.canid: fingerprints[args.canid]}
     for canid in fingerprints:
         fuzzmatrix = []
+        complexity = 0
+        for character in fingerprints[canid]:  # Simple calculation on how complex a template is for --adaptive
+            if character == 'H':
+                complexity += 2
+            elif character == 'N':
+                complexity += 1
+            # print("Character: ", character, "Complexity:", complexity)
+        print("CANID", canid, fingerprints[canid], "complexity is", complexity)
         for character in fingerprints[canid]:
             if character == '0':
                 fuzzmatrix.append([0])
             elif character == 'N':
-                fuzzmatrix.append(numbers)
+                if args.adaptive and complexity > 9:
+                    fuzzmatrix.append(superquicknumbers)
+                    # print("Using Complex and --superquick for ", canid, fingerprints[canid])
+                elif args.adaptive and complexity > 5:
+                    fuzzmatrix.append(quicknumbers)
+                elif args.quick:
+                    fuzzmatrix.append(quicknumbers)
+                elif args.superquick:
+                    fuzzmatrix.append(superquicknumbers)
+                else:
+                    fuzzmatrix.append(numbers)
             elif character == 'H':
-                fuzzmatrix.append(hexes)
+                if args.adaptive and complexity > 9:
+                    fuzzmatrix.append(superquickhexes)
+                elif args.adaptive and complexity > 5:
+                    fuzzmatrix.append(quickhexes)
+                elif args.quick:
+                    fuzzmatrix.append(quickhexes)
+                elif args.superquick:
+                    fuzzmatrix.append(superquickhexes)
+                else:
+                    fuzzmatrix.append(hexes)
             else:
                 print('Unable to complete matrix.  I got the character', character)
                 exit(666)
