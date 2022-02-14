@@ -263,7 +263,9 @@ def zeroize():
     for character0 in hexes:
         for character1 in hexes:
             for character2 in hexes:
-                cansend = 'cansend ' + args.can + ' ' + '0000000000000000'
+                canid = character0 + character1 + character2
+                cansend = 'cansend ' + args.can + ' ' + canid + '#0000000000000000'
+                # print(cansend)
                 if not args.dryrun:  # Ie, we didn't disable sending the CAN frame
                     os.system(cansend)
 
