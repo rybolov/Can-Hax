@@ -12,7 +12,7 @@ Fuzzing uses cansend to push the frames over the wire.
 ## Setup for ICSim:
 You will need cansend which is part of the can-utils package.  You can grab it on a Debian-based system with:
 
-`sudo apt-get install can-utils build-essential`
+`sudo apt-get install can-utils build-essential libsdl2-dev libsdl2-image-dev`
 
 The ICSim project comes with a simple shell script setup_vcan.sh which installs the appropriate kernel modules and creates a virtual CAN device at vcan0 which you can then use to send and receive CAN frames.  It also has an Instrument Cluster (vehicle dashboard) which you can use to view if your fuzzing makes any noticeable changes to the simulated vehicle (tip: try fuzzing CAN IDs 244, 19B, and 188).
 
